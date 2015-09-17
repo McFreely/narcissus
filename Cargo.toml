@@ -4,3 +4,6 @@ version = "0.1.0"
 authors = ["McFreely <paulmcfreely@gmail.com>"]
 description = "A Vector Similarity library"
 license = "MIT"
+
+[dependencies]
+num = "*"
