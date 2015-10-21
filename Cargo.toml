@@ -1,6 +1,6 @@
 [package]
 name = "narcissus"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["McFreely <paulmcfreely@gmail.com>"]
 description = "A Vector Similarity library"
 license = "MIT"
