@@ -16,14 +16,14 @@ pub fn euclidian_distance(vec_one: Vec<f32>, vec_two: Vec<f32>) -> f32 {
 }
 
 pub fn cosine_similarity(vec_one: Vec<f32>, vec_two: Vec<f32>) -> f32 {
-    let dot_product = dot_product_naive(&vec_one, &vec_two);
+    let dot_product = dot_product_optim(&vec_one, &vec_two);
     let magnitude = magnitude(&vec_one) * magnitude(&vec_two);
 
     dot_product / magnitude
 }
 
 pub fn jaccard_coeficient(vec_one: Vec<f32>, vec_two: Vec<f32>) -> f32 {
-    let dot_product = dot_product_naive(&vec_one, &vec_two);
+    let dot_product = dot_product_optim(&vec_one, &vec_two);
     let magnitude_vec_one = magnitude(&vec_one);
     let magnitude_vec_two = magnitude(&vec_two);
 
@@ -39,12 +39,8 @@ pub fn jaccard_coeficient(vec_one: Vec<f32>, vec_two: Vec<f32>) -> f32 {
 pub fn dot_product_naive(xs: &Vec<f32>, ys: &Vec<f32>) -> f32 {
     let mut result: f32 = 0.0;
 
-    let len = cmp::min(xs.len(), ys.len());
-    let xs = &xs[..len];
-    let ys = &ys[..len];
-
-    for i in 0..len {
-        result += &xs[i] * &ys[i]
+    for (x, y) in xs.iter().zip(ys) {
+        result += x * y
     }
 
     result
@@ -66,7 +62,7 @@ pub fn dot_product_optim(xs: &Vec<f32>, ys: &Vec<f32>) -> f32 {
 
 fn magnitude(vec: &Vec<f32>) -> f32 {
     // The magnitude of a vector is the sqrt of its own dotproduct
-    dot_product_naive(vec, vec).sqrt()
+    dot_product_optim(vec, vec).sqrt()
 }
 
 #[cfg(test)]
