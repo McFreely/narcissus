@@ -2,8 +2,8 @@
 #![feature(test)]
 
 extern crate test;
-
 use std::cmp;
+use std::collections::HashSet;
 
 pub fn euclidian_distance(vec_one: Vec<f32>, vec_two: Vec<f32>) -> f32 {
     let mut result: f32 = 0.0;
@@ -65,21 +65,50 @@ fn magnitude(vec: &Vec<f32>) -> f32 {
     dot_product_optim(vec, vec).sqrt()
 }
 
+pub fn matching_words_frequency(s1: &String, s2: &String) -> usize {
+    // Takes two sentences as input
+    // output number of matching words
+
+    let sen_one = s1.split_whitespace().collect::<HashSet<&str>>();
+    let sen_two = s2.split_whitespace().collect::<HashSet<&str>>();
+
+    sen_one.intersection(&sen_two).count()
+}
+
+pub fn matching_words_count(s1: &String, s2: &String) -> usize {
+    let mut result: usize = 0;
+    let words_one = s1.split_whitespace().collect::<Vec<&str>>();
+    let words_two = s2.split_whitespace().collect::<Vec<&str>>();
+
+    for (i, j) in words_one.iter().zip(words_two) {
+        if i.to_string() == j.to_string() { result += 1 }
+    }
+
+    result
+}
+
+pub enum Matching {
+    Frequency,
+    Count,
+}
+
+pub fn matching_sim(s1: &String, s2: &String, matching: Matching) -> usize {
+    let mwc = match matching {
+        Matching::Frequency => matching_words_frequency(&s1, &s2),
+        Matching::Count => matching_words_count(&s1, &s2),
+    };
+
+    (2 * mwc) / (s1.split_whitespace().count() + s2.split_whitespace().count())
+}
+
 #[cfg(test)]
 mod tests {
-
-    use super::test;
-    use super::euclidian_distance;
-    use super::cosine_similarity as cosine;
-    use super::jaccard_coeficient as jaccard;
-    use super::dot_product_naive;
-    use super::dot_product_optim;
-
+    use super::*;
     use test::Bencher;
     use std::f32;
 
     #[test]
-    fn euclidian_distance_works() {
+    fn test_euclidian_distance() {
         let vec_one = vec![1.0, 2.0, 3.0];
         let vec_two = vec![2.0, 1.0, 4.0];
 
@@ -89,23 +118,53 @@ mod tests {
     }
 
     #[test]
-    fn cosine_similarity() {
+    fn test_cosine_similarity() {
         let vec_one = vec![2.0, 1.0, 0.0, 2.0, 0.0, 1.0, 1.0, 1.0];
         let vec_two = vec![2.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0];
 
-        let sim = cosine(vec_one, vec_two);
+        let sim = cosine_similarity(vec_one, vec_two);
 
         assert_eq!(sim, 0.8215838);
     }
 
     #[test]
-    fn jaccard_coeficient() {
+    fn test_jaccard_coeficient() {
         let vec_one = vec![2.0, 1.0, 0.0, 2.0, 0.0, 1.0, 1.0, 1.0];
         let vec_two = vec![2.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0];
         
-        let sim = jaccard(vec_one, vec_two);
+        let sim = jaccard_coeficient(vec_one, vec_two);
 
         assert_eq!(sim, 0.6923077);
+    }
+
+    #[test]
+    fn test_matching_words_count() {
+        let sen_one = String::from("le chat mange le oiseau.");
+        let sen_two = String::from("le chien mange le chat.");
+
+        let match_count = matching_words_count(&sen_one, &sen_two);
+
+        assert_eq!(match_count, 3);
+    }
+    
+    #[test]
+    fn test_matching_words_frequency() {
+        let sen_one = String::from("le chat mange le oiseau.");
+        let sen_two = String::from("le chien mange le chat.");
+
+        let match_count = matching_words_frequency(&sen_one, &sen_two);
+
+        assert_eq!(match_count, 2);
+    }
+
+    #[test]
+    fn test_matching_sim() {
+        let sen_one = String::from("le chat mange.");
+        let sen_two = String::from("le chien mange.");
+
+        let sim = matching_sim(&sen_one, &sen_two, Matching::Count);
+
+        assert_eq!(sim, 3/4);
     }
 
     #[bench]
