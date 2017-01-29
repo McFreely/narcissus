@@ -1,7 +1,5 @@
 #![crate_name = "narcissus"]
-#![feature(test)]
 
-extern crate test;
 use std::cmp;
 use std::collections::HashSet;
 
@@ -92,13 +90,13 @@ pub enum Matching {
     Count,
 }
 
-pub fn matching_sim(s1: &String, s2: &String, matching: Matching) -> usize {
+pub fn matching_sim(s1: &String, s2: &String, matching: Matching) -> f32  {
     let mwc = match matching {
         Matching::Frequency => matching_words_frequency(&s1, &s2),
         Matching::Count => matching_words_count(&s1, &s2),
-    };
+    } as f32;
 
-    (2 * mwc) / (s1.split_whitespace().count() + s2.split_whitespace().count())
+    (2.0 * mwc) / ((s1.split_whitespace().count() as f32) + (s2.split_whitespace().count() as f32))
 }
 
 #[cfg(test)]
@@ -159,12 +157,13 @@ mod tests {
 
     #[test]
     fn test_matching_sim() {
-        let sen_one = String::from("le chat mange.");
-        let sen_two = String::from("le chien mange.");
+        let sen_one = String::from("von miller name game valuabl player 21/2 sack forc fumbl recov defens malik jackson touchdown");
+        let sen_two = String::from("card tell coach told gari kubiak surpris man didn’t prompt");
+        let sen_three = String::from("panther offens struggl bronco offens wasnt denver special teams—jordan norwood 61-yard punt return longest super bowl histori punter britton colquitt averag 459 yard kick constant chang field posit kicker brandon mcmanus nail field goal attempt");
+            
+        let sim = matching_sim(&sen_three, &sen_one, Matching::Frequency);
 
-        let sim = matching_sim(&sen_one, &sen_two, Matching::Count);
-
-        assert_eq!(sim, 3/4);
+        assert_eq!(sim, 2.3);
     }
 
     #[bench]
