@@ -6,4 +6,4 @@ description = "A Vector Similarity library"
 license = "MIT"
 
 [dependencies]
-num = "*"
+num = "0.1"
